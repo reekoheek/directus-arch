@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": false,
+    "types": ["vite/client"],
+    "paths": {
+      "@lib/*": ["./src/lib/*"],
+      "@stores/*": ["./src/stores/*"]
+    }
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": []
+}

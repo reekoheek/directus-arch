@@ -1,0 +1,8 @@
+packages:
+  - 'apps/*'
+  # directus extensions
+  - 'extensions/*'
+  # all packages in subdirs of packages/
+  - 'packages/**'
+  # exclude packages that are inside test directories
+  - '!**/test/**'

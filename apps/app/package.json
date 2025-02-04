@@ -1,0 +1,38 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf .wireit coverage dist",
+    "dev": "vite",
+    "lint": "tsc --pretty --noEmit",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest watch --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@directus/sdk": "^19.0.0",
+    "@roh/schema": "workspace:*",
+    "@vaadin/combo-box": "^24.6.3",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.7",
+    "lit": "^3.2.1",
+    "nanoid": "^5.0.9"
+  },
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "@types/bootstrap": "^5.2.10",
+    "cssnano": "^7.0.6",
+    "postcss-import": "^16.1.0",
+    "postcss-preset-env": "^10.1.3",
+    "postcss-url": "^10.1.3"
+  }
+}

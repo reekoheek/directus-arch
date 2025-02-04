@@ -1,0 +1,73 @@
+{
+  "name": "directus-ext",
+  "description": "Please enter a description for your extension",
+  "icon": "extension",
+  "version": "1.0.0",
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-extension-hook"
+  ],
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "private": true,
+  "directus:extension": {
+    "type": "bundle",
+    "path": {
+      "app": "dist/app.js",
+      "api": "dist/api.js"
+    },
+    "entries": [
+      {
+        "type": "hook",
+        "name": "hooks",
+        "source": "src/hooks.ts"
+      },
+      {
+        "type": "endpoint",
+        "name": "endpoints",
+        "source": "src/endpoints.ts"
+      }
+    ],
+    "host": "^10.10.0"
+  },
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build -w --no-minify",
+    "lint": "tsc --pretty --noEmit",
+    "link": "directus-extension link",
+    "test": "wireit",
+    "test:watch": "wireit"
+  },
+  "wireit": {
+    "test": {
+      "command": "vitest run --coverage",
+      "env": {
+        "BIOSTAR_HOST": "192.168.56.7",
+        "BIOSTAR_PASSWORD": "Password1"
+      }
+    },
+    "test:watch": {
+      "command": "vitest watch --coverage",
+      "env": {
+        "BIOSTAR_HOST": "192.168.56.7",
+        "BIOSTAR_PASSWORD": "Password1"
+      }
+    }
+  },
+  "dependencies": {
+    "nanoid": "^5.0.9",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@directus/errors": "^2.0.0",
+    "@directus/extensions": "^3.0.0",
+    "@directus/extensions-sdk": "13.0.0",
+    "@directus/types": "^13.0.0",
+    "@types/ws": "^8.5.14",
+    "knex": "^3.1.0",
+    "typescript": "^5.7.3"
+  }
+}

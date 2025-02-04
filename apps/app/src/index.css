@@ -1,0 +1,31 @@
+.v-full {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #999;
+}
+
+.dot-red {
+  background-color: #f00;
+}
+
+.dot-green {
+  background-color: #0f0;
+}
+
+:root {
+  --vaadin-input-field-background: var(--bs-body-bg);
+}
+
+vaadin-combo-box-overlay {
+  z-index: 9998;
+}

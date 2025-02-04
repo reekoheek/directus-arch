@@ -1,0 +1,19 @@
+{
+  "name": "directus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm dev:down; pnpm dev:up && pnpm dev:logs",
+    "dev:up": "docker compose -f docker-compose.dev.yaml up -d",
+    "dev:down": "docker compose -f docker-compose.dev.yaml down",
+    "dev:logs": "docker compose -f docker-compose.dev.yaml logs -f directus",
+    "prod": "pnpm prod:up",
+    "prod:up": "docker compose up -d",
+    "prod:down": "docker compose down",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

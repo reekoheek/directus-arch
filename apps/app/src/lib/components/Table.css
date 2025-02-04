@@ -1,0 +1,40 @@
+.table a {
+  text-decoration: none;
+}
+
+.table tr {
+  display: grid;
+  grid-template-columns: var(--grid-columns);
+}
+
+.table thead th {
+  position: relative;
+  user-select: none;
+}
+
+.table .resize-handle {
+  width: 4px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: ew-resize;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.table tr:hover .resize-handle > .separator {
+  background-color: var(--bs-table-border-color);
+  display: inline-block;
+  width: 1px;
+  height: 75%;
+}
+
+.table .resize-handle:hover > .separator {
+  background-color: var(--bs-primary) !important;
+}
+
+.table .sort-handle {
+  cursor: grabbing;
+}

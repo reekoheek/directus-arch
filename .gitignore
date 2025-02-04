@@ -1,0 +1,16 @@
+# os
+.DS_Store
+
+# dev
+.wireit
+.vscode
+node_modules
+coverage
+dist
+dev-dist
+
+# secret
+.env
+*.bak
+
+images/*.tar

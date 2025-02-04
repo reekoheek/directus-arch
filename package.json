@@ -1,0 +1,39 @@
+{
+  "name": "pristine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "wireit",
+    "format": "biome format"
+  },
+  "wireit": {
+    "lint": {
+      "command": "biome lint --colors=force && pnpm -r lint",
+      "files": [
+        "**/*.ts",
+        "tsconfig.json"
+      ]
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@ngneat/falso": "^7.3.0",
+    "@types/node": "^22.13.1",
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
+    "@vitest/coverage-v8": "^3.0.5",
+    "oxlint": "0.15.9",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.11",
+    "vite-plugin-pwa": "^0.21.1",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.5",
+    "wireit": "^0.14.10"
+  }
+}
