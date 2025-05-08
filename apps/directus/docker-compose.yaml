@@ -1,0 +1,86 @@
+name: pristine
+services:
+  directus:
+    restart: always
+    image: directus/directus:11.4.0
+    ports:
+      - 8055:8055
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.directus.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.directus.entrypoints=webdirectus"
+      - "traefik.http.routers.directus.tls.certresolver=myresolver"
+      - "traefik.http.services.directus.loadbalancer.server.port=8055"
+    volumes:
+      - ./database:/directus/database
+      - ./uploads:/directus/uploads
+      - ../../extensions:/directus/extensions
+    environment:
+      KEY: "directus-key"
+      SECRET: "directus-secret"
+      ADMIN_EMAIL: "admin@pristine.app"
+      ADMIN_PASSWORD: "1"
+      DB_CLIENT: "sqlite3"
+      DB_FILENAME: "/directus/database/data.db"
+      WEBSOCKETS_ENABLED: true
+      EMAIL_VERIFY_SETUP: true
+      EMAIL_TRANSPORT: "smtp"
+      EMAIL_SMTP_HOST: "mailpit"
+      EMAIL_SMTP_PORT: 1025
+      CORS_ENABLED: 'true'
+      CORS_ORIGIN: '*'
+      CORS_METHODS: 'GET,POST,PATCH,DELETE,OPTIONS'
+      CORS_ALLOWED_HEADERS: 'Content-Type,Authorization'
+      CORS_EXPOSED_HEADERS: 'Content-Range'
+      CORS_CREDENTIALS: 'true'
+      CORS_MAX_AGE: '180000'
+      EXTENSIONS_AUTO_RELOAD: true
+      # APP_BIOSTAR_HOST: "host.docker.internal"
+      # APP_BIOSTAR_PASSWORD: "Password1"
+      # APP_BIOSTAR_USER_GROUP: "1002" 
+
+  app:
+    restart: always
+    image: nginx:1.27.3
+    volumes:
+      - ../app/dist:/usr/share/nginx/html
+      - ../app/conf.d:/etc/nginx/conf.d
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
+      - "traefik.http.services.app.loadbalancer.server.port=80"
+
+  traefik:
+    restart: always
+    image: traefik:v3.0.4
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.webdirectus.address=:8443"
+      - "--entryPoints.websecure.address=:9443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=postmaster@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "9443:9443"
+      - "8443:8443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  mailpit:
+    restart: always
+    image: axllent/mailpit:v1.21.8
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      # MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1

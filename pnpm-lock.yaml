@@ -53,9 +53,6 @@ importers:
       '@directus/sdk':
         specifier: ^19.0.0
         version: 19.0.0
-      '@roh/schema':
-        specifier: workspace:*
-        version: link:../../packages/schema
       '@vaadin/combo-box':
         specifier: ^24.6.3
         version: 24.6.3
@@ -126,8 +123,6 @@ importers:
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
-
-  packages/schema: {}
 
 packages:
 
