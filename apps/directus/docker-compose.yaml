@@ -37,7 +37,7 @@ services:
       EXTENSIONS_AUTO_RELOAD: true
       # APP_BIOSTAR_HOST: "host.docker.internal"
       # APP_BIOSTAR_PASSWORD: "Password1"
-      # APP_BIOSTAR_USER_GROUP: "1002" 
+      # APP_BIOSTAR_USER_GROUP: "1002"
 
   app:
     restart: always

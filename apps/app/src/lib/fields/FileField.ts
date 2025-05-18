@@ -89,7 +89,7 @@ export class FileField extends Field<string> {
           continue;
         }
 
-        if (this.preview) {
+        if (this.preview && file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onloadend = () => {
             this.previewSrc = reader.result as string;

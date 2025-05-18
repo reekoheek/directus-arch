@@ -19,17 +19,16 @@ export function createMenu(): MenuGroup[] {
     },
   ];
 
-  if (config.dev) {
-    groups.push({
-      items: [
-        {
-          active: () => router.ctx.path.startsWith('/test'),
-          label: 'Test',
-          url: router.link('/test'),
-        },
-      ],
-    });
-  }
+  groups.push({
+    hidden: () => !config.dev,
+    items: [
+      {
+        active: () => router.ctx.path.startsWith('/test'),
+        label: 'Test',
+        url: router.link('/test'),
+      },
+    ],
+  });
 
   groups.push({
     items: [

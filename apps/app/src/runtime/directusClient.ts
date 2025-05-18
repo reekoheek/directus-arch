@@ -10,7 +10,7 @@ export const directusClient = createDirectus(config.directusUrl)
             const sess = JSON.parse(localStorage.getItem('directus_sess') ?? '');
             return sess;
           } catch {
-            console.error('unparsed session');
+            // noop
           }
         },
 

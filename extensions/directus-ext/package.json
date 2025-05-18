@@ -58,16 +58,16 @@
     }
   },
   "dependencies": {
-    "nanoid": "^5.0.9",
-    "ws": "^8.18.0"
+    "nanoid": "^5.1.5",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
-    "@directus/errors": "^2.0.0",
-    "@directus/extensions": "^3.0.0",
-    "@directus/extensions-sdk": "13.0.0",
-    "@directus/types": "^13.0.0",
-    "@types/ws": "^8.5.14",
+    "@directus/errors": "^2.0.1",
+    "@directus/extensions": "^3.0.5",
+    "@directus/extensions-sdk": "13.1.0",
+    "@directus/types": "^13.1.1",
+    "@types/ws": "^8.18.1",
     "knex": "^3.1.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   }
 }

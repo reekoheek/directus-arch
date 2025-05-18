@@ -1,12 +1,12 @@
 import { customElement, state } from 'lit/decorators.js';
 import { html, LitElement } from 'lit';
-import { router } from '@stores/router.js';
+import { router } from '../../runtime/router.js';
 import '@lib/components/Menu.js';
-import { createMenu } from '@stores/menu.js';
+import { createMenu } from '../../runtime/menu.js';
 import logo from '@stores/img/lumba.png';
 import type { MenuGroup } from '@lib/components/Menu.js';
-import { config } from '@stores/config.js';
-import { auth } from '@stores/auth.js';
+import { config } from '../../runtime/config.js';
+import { auth } from '../../runtime/auth.js';
 
 @customElement('a-app')
 export class App extends LitElement {

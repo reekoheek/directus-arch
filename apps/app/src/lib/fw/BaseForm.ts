@@ -125,13 +125,17 @@ export abstract class BaseForm<T = Record<string, unknown>> extends BasePage {
 
     const ok = await this.requestSubmit();
     if (ok) {
-      this.close();
+      this.popCallback();
     }
   }
 
   protected async requestSubmit(): Promise<boolean> {
     this.submitting = true;
     try {
+      if (!this.value) {
+        throw new Error('invalid form');
+      }
+
       const errors = await this.submit(this.value as T);
       if (Object.keys(errors).length !== 0) {
         this.errors = errors;
@@ -153,10 +157,10 @@ export abstract class BaseForm<T = Record<string, unknown>> extends BasePage {
   }
 
   protected onCancel() {
-    this.close();
+    this.popCallback();
   }
 
-  protected close() {
+  protected popCallback() {
     this.router.pop();
   }
 }

@@ -4,13 +4,13 @@ import '@lib/fields/TextField.js';
 import '@lib/components/Button.js';
 import { RecordField } from '@lib/fields/RecordField.js';
 import { Toast } from '@lib/components/Toast.js';
-import { auth } from '@stores/auth.js';
+import { auth } from '../../runtime/auth.js';
 import { BasePage } from '@lib/fw/BasePage.js';
 import type { Rule } from '@lib/fields/Rule.js';
-import { directusClient } from '@stores/directusClient.js';
+import { directusClient } from '../../runtime/directusClient.js';
 import { updateMe } from '@directus/sdk';
-import logo from '@stores/img/lumba.png';
-import { t } from '@stores/i18n.js';
+import logo from '@stores/img/simplo.png';
+import { t } from '../../runtime/i18n.js';
 
 @customElement('a-change-password')
 export class ChangePassword extends BasePage {
@@ -40,13 +40,13 @@ export class ChangePassword extends BasePage {
   protected render(): unknown {
     return html`
       <div class="v-full d-flex align-items-center justify-content-center">
-        <div class="p-3" style="width: 100%; max-width: 400px">
+        <div class="p-3" style="width: 100%; max-width: 600px">
           <div class="mb-5 text-center">
             <img src=${logo} alt="App" width="230">
           </div>
-          
+
           <form @submit=${this.onSubmit}>
-            <f-record-field 
+            <f-record-field
               .value=${this.value}
               .errors=${this.errors}
               @mutate=${this.onMutate}

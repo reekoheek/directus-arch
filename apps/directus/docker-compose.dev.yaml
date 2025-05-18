@@ -2,7 +2,7 @@ name: pristine
 services:
   directus:
     restart: always
-    image: directus/directus:11.4.0
+    image: directus/directus:11.7.2
     ports:
       - 8055:8055
     labels:
@@ -14,7 +14,14 @@ services:
     volumes:
       - ./database:/directus/database
       - ./uploads:/directus/uploads
+      - ./schema:/directus/schema
       - ../../extensions:/directus/extensions
+    command: >
+      sh -c "
+        npx directus bootstrap &&
+        npx directus schema apply -y ./schema/schema.yml &&
+        npx directus start
+      "
     environment:
       KEY: "directus-key"
       SECRET: "directus-secret"
@@ -37,20 +44,20 @@ services:
       EXTENSIONS_AUTO_RELOAD: true
       # APP_BIOSTAR_HOST: "host.docker.internal"
       # APP_BIOSTAR_PASSWORD: "Password1"
-      # APP_BIOSTAR_USER_GROUP: "1002" 
+      # APP_BIOSTAR_USER_GROUP: "1002"
 
-  app:
-    restart: always
-    image: nginx:1.27.3
-    volumes:
-      - ../app/dist:/usr/share/nginx/html
-      - ../app/conf.d:/etc/nginx/conf.d
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls.certresolver=myresolver"
-      - "traefik.http.services.app.loadbalancer.server.port=80"
+  # app:
+  #   restart: always
+  #   image: nginx:1.27.3
+  #   volumes:
+  #     - ../app/dist:/usr/share/nginx/html
+  #     - ../app/conf.d:/etc/nginx/conf.d
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.app.rule=PathPrefix(`/`)"
+  #     - "traefik.http.routers.app.entrypoints=websecure"
+  #     - "traefik.http.routers.app.tls.certresolver=myresolver"
+  #     - "traefik.http.services.app.loadbalancer.server.port=80"
 
   traefik:
     restart: always
@@ -61,13 +68,13 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.webdirectus.address=:8443"
-      - "--entryPoints.websecure.address=:9443"
+      # - "--entryPoints.websecure.address=:9443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.myresolver.acme.email=postmaster@example.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "9443:9443"
+      # - "9443:9443"
       - "8443:8443"
       - "8080:8080"
     volumes:

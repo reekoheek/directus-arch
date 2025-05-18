@@ -2,12 +2,9 @@ import type { Rule } from './Rule.js';
 
 export const numeric = <T>(message = 'invalid'): Rule<T> => {
   return (value) => {
-    const sv = `${value}`;
-    // if (typeof value !== 'string') {
-    //   return message;
-    // }
+    const sValue = `${value}`;
 
-    const matches = /^\d+$/.exec(sv);
+    const matches = /^\d+$/.exec(sValue);
     if (!matches) {
       return message;
     }

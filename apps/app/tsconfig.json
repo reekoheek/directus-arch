@@ -18,7 +18,7 @@
     "types": ["vite/client"],
     "paths": {
       "@lib/*": ["./src/lib/*"],
-      "@stores/*": ["./src/stores/*"]
+      "@stores/*": ["src/runtime/*"]
     }
   },
   "include": ["./src/**/*.ts"],

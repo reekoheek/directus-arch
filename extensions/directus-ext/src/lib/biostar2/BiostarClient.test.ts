@@ -8,14 +8,16 @@ describe.skip('BiostarClient', () => {
     it('login', async () => {
       const client = new BiostarClient({
         host: BIOSTAR_HOST,
+        loginId: BIOSTAR_LOGINID,
+        password: BIOSTAR_PASSWORD,
         rejectUnauthorized: false,
       });
       try {
-        await client.login(BIOSTAR_LOGINID, BIOSTAR_PASSWORD);
-        expect(client.loggedIn).toStrictEqual(true);
+        await client.connect();
+        expect(client.connected).toStrictEqual(true);
       } finally {
         try {
-          await client.logout();
+          await client.disconnect();
         } catch {}
       }
     });
@@ -30,7 +32,7 @@ describe.skip('BiostarClient', () => {
 
     afterEach(async () => {
       try {
-        await client.logout();
+        await client.disconnect();
       } catch {}
     });
 
@@ -66,27 +68,5 @@ describe.skip('BiostarClient', () => {
         expect((err as Error).message).toStrictEqual('ouch');
       }
     });
-  });
-
-  describe('#subscribe()', () => {
-    it('subscribe event', async () => {
-      const client = await createTestClient();
-
-      try {
-        const unsubscribe = client.subscribe(() => {});
-
-        expect(client.subscribers.length).toStrictEqual(1);
-
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
-        unsubscribe();
-
-        expect(client.subscribers.length).toStrictEqual(0);
-      } finally {
-        try {
-          await client.logout();
-        } catch {}
-      }
-    }, 100000);
   });
 });

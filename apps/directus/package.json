@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm dev:down; pnpm dev:up && pnpm dev:logs",
-    "dev:up": "docker compose -f docker-compose.dev.yaml up -d",
+    "clean": "rm -rf database/* && rm -rf uploads/*",
+    "dev": "docker compose -f docker-compose.dev.yaml up",
     "dev:down": "docker compose -f docker-compose.dev.yaml down",
     "dev:logs": "docker compose -f docker-compose.dev.yaml logs -f directus",
-    "prod": "pnpm prod:up",
-    "prod:up": "docker compose up -d",
+    "schema:snapshot": "docker compose -f docker-compose.dev.yaml run --rm directus npx directus schema snapshot ./schema/schema.yml",
+    "schema:apply": "docker compose -f docker-compose.dev.yaml run --rm directus npx directus schema apply ./schema/schema.yml",
+    "prod": "docker compose up -d",
     "prod:down": "docker compose down",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -12,15 +12,17 @@ export const lookupBiostarClient = createStore(
 
     const client = new BiostarClient({
       host: BIOSTAR_HOST,
+      loginId: BIOSTAR_LOGINID,
+      password: BIOSTAR_PASSWORD,
       rejectUnauthorized: false,
     });
 
-    await client.login(BIOSTAR_LOGINID, BIOSTAR_PASSWORD, true);
+    await client.connect();
 
     return client;
   },
   async (promisedClient) => {
     const client = await promisedClient;
-    client.logout();
+    client.disconnect();
   },
 );

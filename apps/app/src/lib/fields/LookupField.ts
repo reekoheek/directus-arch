@@ -33,7 +33,7 @@ export class LookupField extends Field<string> {
   @state()
   private items?: Record<string, unknown>[];
 
-  private readonly requestLookup = debounce(async (search: string) => {
+  readonly requestLookup = debounce(async (search: string) => {
     if (!this.lookup) {
       throw new Error('undefined lookup method');
     }

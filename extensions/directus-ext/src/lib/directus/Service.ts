@@ -12,8 +12,10 @@ export type QueryOptions = {
   emitEvents?: boolean;
 };
 
-export interface Service<T> {
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+export interface Service<T = any> {
   createOne(item: Partial<T>, opts?: MutationOptions): Promise<void>;
+  createMany(items: Partial<T>, opts?: MutationOptions): Promise<void>;
   readOne(key: string, query?: Query): Promise<T>;
   readByQuery(query: Query, opts?: QueryOptions): Promise<T[]>;
   updateOne(id: string, item: Partial<T>, opts?: MutationOptions): Promise<void>;

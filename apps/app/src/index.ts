@@ -1,5 +1,5 @@
 import { addStyle } from '@lib/style/index.js';
-import { putConfig } from '@stores/config.js';
+import { putConfig } from './runtime/config.js';
 
 (async () => {
   await putConfig();
@@ -13,9 +13,9 @@ import { putConfig } from '@stores/config.js';
   ).map((imported) => imported.default);
   addStyle(...styles);
 
-  const { i18n } = await import('@stores/i18n.js');
+  const { i18n } = await import('./runtime/i18n.js');
   await i18n.load();
-  const { router } = await import('@stores/router.js');
+  const { router } = await import('./runtime/router.js');
   await router.load();
 
   await import('./features/common/App.js');

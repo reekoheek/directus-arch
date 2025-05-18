@@ -1,9 +1,13 @@
 import { BiostarError, HttpError } from './BiostarError.js';
 import type { BiostarRequest } from './BiostarRequest.js';
 import { WebSocket } from 'ws';
+import debugModule from 'debug';
+
+const log = debugModule('lib:biostar:log');
+log.enabled = true;
 
 export type ResultMapper<TResult> = (resp: Response) => TResult | Promise<TResult>;
-export type ErrorMapper = (err: HttpError) => BiostarError | Promise<BiostarError>;
+export type ErrorMapper = (err: unknown) => BiostarError | Promise<BiostarError>;
 
 export type SubscribeFn<T> = (data: T) => void;
 
@@ -26,9 +30,13 @@ const DEFAULT_KEEPALIVE_INTERVAL = 30 * 60 * 1000;
 
 interface BiostarClientOpts {
   host: string;
+  loginId: string;
+  password: string;
   rejectUnauthorized?: boolean;
   keepAliveInterval?: number;
 }
+
+type ConnectedCallback = () => unknown;
 
 export class BiostarClient {
   public subscribers: SubscribeFn<unknown>[] = [];
@@ -36,6 +44,11 @@ export class BiostarClient {
   private ws?: WebSocket;
   private _keepAliveT: unknown = 0;
   private opts: Required<BiostarClientOpts>;
+  private connectedCallback?: ConnectedCallback;
+
+  get connected() {
+    return Boolean(this.sessionId);
+  }
 
   constructor(opts: BiostarClientOpts) {
     this.opts = {
@@ -49,145 +62,31 @@ export class BiostarClient {
     }
   }
 
-  stopListening() {
-    try {
-      this.ws?.close();
-    } catch {}
-    this.ws = undefined;
+  onConnected(cb: ConnectedCallback) {
+    this.connectedCallback = cb;
   }
 
-  startListening() {
-    if (this.ws) {
-      return;
-    }
-
-    const wsUrl = `wss://${this.opts.host}/wsapi`;
-    this.ws = new WebSocket(wsUrl, {
-      rejectUnauthorized: this.opts.rejectUnauthorized,
-    });
-
-    this.ws.on('error', (err) => {
-      console.error('ws error', err);
-      this.ws?.close();
-    });
-
-    this.ws.on('close', () => {
-      this.ws = undefined;
-    });
-
-    this.ws.on('open', () => {
-      console.info('biostar client: listen event with session', this.sessionId);
-      this.ws?.send(`bs-session-id=${this.sessionId}`);
-    });
-
-    this.ws?.on('message', async (data) => {
-      const payload = JSON.parse(data.toString());
-
-      if (payload.Response && payload.Response.code === '0') {
-        const data = await this.request({
-          url: '/events/start',
-          method: 'POST',
-        });
-
-        if (data.Response.code !== '0') {
-          this.ws?.close();
-          throw new Error('failure to start events');
-        }
-
-        console.info('biostar client: event listening started');
-        return;
-      }
-
-      for (const fn of this.subscribers) {
-        try {
-          fn(payload);
-        } catch (err) {
-          console.error('biostar client subscriber error', err);
-        }
-      }
-    });
-  }
-
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  subscribe<T = any>(fn: SubscribeFn<T>): () => void {
-    if (!this.ws && this.loggedIn) {
-      this.startListening();
-    }
-
-    this.subscribers.push(fn as SubscribeFn<unknown>);
-
-    return () => {
-      const index = this.subscribers.indexOf(fn as SubscribeFn<unknown>);
-      if (index !== -1) {
-        this.subscribers.splice(index, 1);
-      }
-      if (this.subscribers.length === 0) {
-        this.stopListening();
-      }
-    };
-  }
-
-  get loggedIn() {
-    return Boolean(this.sessionId);
-  }
-
-  private apiUrl(path: string) {
-    return `https://${this.opts.host}/api${path}`;
-  }
-
-  async login(loginId: string, password: string, keepAlive = false) {
-    const resp = await fetch(this.apiUrl('/login'), {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        User: {
-          login_id: loginId,
-          password,
-        },
-      }),
-    });
-
-    if (!resp.ok) {
-      throw new BiostarError('unauthorized', 401);
-    }
-
-    const sessionId = resp.headers.get('bs-session-id');
-    if (!sessionId) {
-      throw new Error('bs-session-id not found');
-    }
-    this.sessionId = sessionId;
+  async connect() {
+    await this.login();
 
     if (this.subscribers.length > 0) {
       this.startListening();
     }
 
-    if (keepAlive) {
+    if (this.opts.keepAliveInterval) {
       this.startKeepAlive();
     }
+
+    log('connected');
+
+    await this.connectedCallback?.();
   }
 
-  private startKeepAlive() {
-    const keepAliveCheck = async () => {
-      console.info(new Date().toJSON(), 'biostar keepalive check');
-      await this.request({
-        method: 'GET',
-        url: '/users?limit=1',
-      });
-      this._keepAliveT = setTimeout(keepAliveCheck, this.opts.keepAliveInterval);
-    };
-    this._keepAliveT = setTimeout(keepAliveCheck, this.opts.keepAliveInterval);
-  }
-
-  async logout() {
-    clearTimeout(this._keepAliveT as number);
-    await this.request({
-      method: 'POST',
-      url: '/logout',
-    });
-
-    this.sessionId = undefined;
+  async disconnect() {
+    this.stopKeepAlive();
+    this.stopListening();
+    await this.logout();
+    log('disconnected');
   }
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -197,7 +96,7 @@ export class BiostarClient {
 
     try {
       if (!this.sessionId) {
-        throw new BiostarError('unauthorized', 401);
+        throw new BiostarError('unauthorized');
       }
 
       const fetchOptions = {
@@ -220,16 +119,174 @@ export class BiostarClient {
 
       return result;
     } catch (err) {
-      if (err instanceof HttpError === false) {
-        throw err;
-      }
-
-      if (err.response.status === 401) {
-        throw new BiostarError('unauthorized', 401);
-      }
-
       const mappedErr = await errorMapper(err);
       throw mappedErr;
+    }
+  }
+
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  subscribe<T = any>(fn: SubscribeFn<T>): () => void {
+    this.subscribers.push(fn as SubscribeFn<unknown>);
+
+    if (!this.ws && this.connected) {
+      this.startListening();
+    }
+
+    return () => {
+      const index = this.subscribers.indexOf(fn as SubscribeFn<unknown>);
+      if (index !== -1) {
+        this.subscribers.splice(index, 1);
+      }
+      if (this.subscribers.length === 0) {
+        this.stopListening();
+      }
+    };
+  }
+
+  private startListening() {
+    if (this.ws) {
+      return;
+    }
+
+    const wsUrl = `wss://${this.opts.host}/wsapi`;
+    this.ws = new WebSocket(wsUrl, {
+      rejectUnauthorized: this.opts.rejectUnauthorized,
+    });
+
+    this.ws.on('error', (err: unknown) => {
+      log('ws error', err);
+      this.ws?.close();
+      this.handleError(new Error('ws failed'));
+    });
+
+    this.ws.on('close', () => {
+      this.ws = undefined;
+    });
+
+    this.ws.on('open', () => {
+      log('listen event with session', this.sessionId);
+      this.ws?.send(`bs-session-id=${this.sessionId}`);
+    });
+
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    this.ws?.on('message', async (data: any) => {
+      const payload = JSON.parse(data.toString());
+
+      if (payload.Response && payload.Response.code === '0') {
+        const data = await this.request({
+          url: '/events/start',
+          method: 'POST',
+        });
+
+        if (data.Response.code !== '0') {
+          this.ws?.close();
+          throw new Error('failure to start events');
+        }
+
+        log('event listening started');
+        return;
+      }
+
+      for (const fn of this.subscribers) {
+        try {
+          fn(payload);
+        } catch (err) {
+          log('subscriber error', err);
+        }
+      }
+    });
+  }
+
+  private stopListening() {
+    if (!this.ws) {
+      return;
+    }
+
+    try {
+      this.ws.close();
+    } finally {
+      this.ws = undefined;
+    }
+  }
+
+  private apiUrl(path: string) {
+    return `https://${this.opts.host}/api${path}`;
+  }
+
+  private async login() {
+    const resp = await fetch(this.apiUrl('/login'), {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        User: {
+          login_id: this.opts.loginId,
+          password: this.opts.password,
+        },
+      }),
+    });
+
+    if (!resp.ok) {
+      throw new BiostarError('unauthorized', 400);
+    }
+
+    const sessionId = resp.headers.get('bs-session-id');
+    if (!sessionId) {
+      throw new Error('bs-session-id not found');
+    }
+    this.sessionId = sessionId;
+  }
+
+  private async logout() {
+    if (!this.sessionId) {
+      return;
+    }
+
+    try {
+      this.sessionId = undefined;
+      await this.request({
+        method: 'POST',
+        url: '/logout',
+      });
+    } catch {
+      // noop
+    }
+  }
+
+  private startKeepAlive() {
+    const keepAliveCheck = async () => {
+      log('biostar keepalive check');
+      try {
+        await this.request({
+          method: 'GET',
+          url: '/users?limit=1',
+        });
+        this._keepAliveT = setTimeout(keepAliveCheck, this.opts.keepAliveInterval);
+      } catch {
+        this.handleError(new Error('keepalive failed'));
+      }
+    };
+    this._keepAliveT = setTimeout(keepAliveCheck, this.opts.keepAliveInterval);
+  }
+
+  private stopKeepAlive() {
+    clearTimeout(this._keepAliveT as number);
+  }
+
+  private async handleError(err: unknown) {
+    const message = err instanceof Error ? err.message : `${err}`;
+    log('client reconnecting caused by:', message);
+
+    while (true) {
+      try {
+        await this.disconnect();
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await this.connect();
+        return;
+      } catch {
+        log('retry reconnecting');
+      }
     }
   }
 }

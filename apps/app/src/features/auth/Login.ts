@@ -4,10 +4,10 @@ import '@lib/fields/TextField.js';
 import '@lib/components/Button.js';
 import { RecordField } from '@lib/fields/RecordField.js';
 import { Toast } from '@lib/components/Toast.js';
-import { auth } from '@stores/auth.js';
+import { auth } from '../../runtime/auth.js';
 import { BasePage } from '@lib/fw/BasePage.js';
 import logo from '@stores/img/lumba.png';
-import { t } from '@stores/i18n.js';
+import { t } from '../../runtime/i18n.js';
 
 interface LoginCredential {
   username: string;
@@ -25,7 +25,7 @@ export class Login extends BasePage {
   protected render(): unknown {
     return html`
       <div class="v-full d-flex align-items-center justify-content-center">
-        <div class="p-3" style="width: 100%; max-width: 400px">
+        <div class="p-3" style="width: 100%; max-width: 600px">
           <div class="mb-5 text-center">
             <img src=${logo} alt="App" width="230">
           </div>

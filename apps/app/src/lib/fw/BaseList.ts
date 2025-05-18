@@ -226,9 +226,7 @@ export abstract class BaseList<T extends object = Record<string, unknown>> exten
 
   protected renderSearch(): unknown {
     return html`
-      <div>
-        <c-search .value=${this.query.search ?? ''} @search=${this.onSearch}></c-search>
-      </div>
+      <c-search .value=${this.query.search ?? ''} @search=${this.onSearch}></c-search>
     `;
   }
 
@@ -279,9 +277,26 @@ export abstract class BaseList<T extends object = Record<string, unknown>> exten
 
     this.query.search = search;
 
-    this.router.replace(search ? `?_search=${search}` : '?', true);
-
+    const urlQuery = this.toQueryString(this.query);
+    this.router.replace(urlQuery);
     this.requestLoad();
+  }
+
+  toQueryString(query: Query): string {
+    const qso: string[] = [];
+
+    if (query.search) {
+      qso.push(`_search=${query.search}`);
+    }
+
+    if (query.filter) {
+      for (const key in query.filter) {
+        const value = query.filter[key];
+        qso.push(`${key}=${value}`);
+      }
+    }
+
+    return `?${qso.join('&')}`;
   }
 
   async requestLoad() {
@@ -310,13 +325,18 @@ function toQuery(urlQuery: Record<string, string>): Query {
   if (urlQuery._search) {
     query.search = urlQuery._search;
   }
-
-  const filter = { ...urlQuery };
-  // biome-ignore lint/performance/noDelete: <explanation>
-  delete filter._search;
-  if (Object.keys(filter).length !== 0) {
-    query.filter = filter;
-  }
+  query.filter = toFilter(urlQuery);
 
   return query;
+}
+
+function toFilter(urlQuery: Record<string, string>): Record<string, string> {
+  const filter: Record<string, string> = {};
+
+  for (const key in urlQuery) {
+    if (key[0] !== '_' && urlQuery[key]) {
+      filter[key] = urlQuery[key];
+    }
+  }
+  return filter;
 }
