@@ -1,2 +1,5 @@
-/database
-/uploads
+/database/*
+!/database/.gitkeep
+/uploads/*
+!/uploads/.gitkeep
+

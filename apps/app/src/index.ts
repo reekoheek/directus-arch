@@ -1,8 +1,11 @@
 import { addStyle } from '@lib/style/index.js';
-import { putConfig } from './runtime/config.js';
+import { config, putConfig } from './runtime/config.js';
+import { bypassHttps } from '@lib/bypass-https/bypassHttps.js';
 
 (async () => {
   await putConfig();
+
+  await bypassHttps(`${config.directusUrl}/ext/check`);
 
   const styles = (
     await Promise.all([

@@ -1,4 +1,4 @@
-name: pristine
+name: wira-messbontang
 services:
   directus:
     restart: always
@@ -18,7 +18,7 @@ services:
     environment:
       KEY: "directus-key"
       SECRET: "directus-secret"
-      ADMIN_EMAIL: "admin@pristine.app"
+      ADMIN_EMAIL: "admin@simplo.id"
       ADMIN_PASSWORD: "1"
       DB_CLIENT: "sqlite3"
       DB_FILENAME: "/directus/database/data.db"

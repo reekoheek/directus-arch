@@ -2,7 +2,7 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './Button.css';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success';
 type ButtonType = 'submit' | 'button';
 
 @customElement('c-button')

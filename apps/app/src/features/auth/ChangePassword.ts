@@ -9,7 +9,7 @@ import { BasePage } from '@lib/fw/BasePage.js';
 import type { Rule } from '@lib/fields/Rule.js';
 import { directusClient } from '../../runtime/directusClient.js';
 import { updateMe } from '@directus/sdk';
-import logo from '@stores/img/simplo.png';
+import logo from '@runtime/img/simplo.png';
 import { t } from '../../runtime/i18n.js';
 
 @customElement('a-change-password')

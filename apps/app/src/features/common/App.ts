@@ -3,7 +3,7 @@ import { html, LitElement } from 'lit';
 import { router } from '../../runtime/router.js';
 import '@lib/components/Menu.js';
 import { createMenu } from '../../runtime/menu.js';
-import logo from '@stores/img/lumba.png';
+import logo from '@runtime/img/lumba.png';
 import type { MenuGroup } from '@lib/components/Menu.js';
 import { config } from '../../runtime/config.js';
 import { auth } from '../../runtime/auth.js';

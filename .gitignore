@@ -3,7 +3,6 @@
 
 # dev
 .wireit
-.vscode
 node_modules
 coverage
 dist

@@ -4,8 +4,8 @@ import { title } from '@lib/router/middlewares/title.js';
 import { layout } from '@lib/router/middlewares/layout.js';
 import { splash } from '@lib/router/middlewares/splash.js';
 import { lazy } from '@lib/router/routes/lazy.js';
-// import { auth } from './auth.js';
-// import { authenticate } from '@lib/auth/authenticate.js';
+import { auth } from './auth.js';
+import { authenticate } from '@lib/auth/authenticate.js';
 
 export const router = new Router({
   base: config.baseUrl,
@@ -14,7 +14,7 @@ export const router = new Router({
 router.use(splash());
 router.use(title());
 router.use(layout());
-// router.use(authenticate(auth));
+router.use(authenticate(auth));
 
 router.route(
   '/',

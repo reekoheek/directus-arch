@@ -6,7 +6,7 @@ import { RecordField } from '@lib/fields/RecordField.js';
 import { Toast } from '@lib/components/Toast.js';
 import { auth } from '../../runtime/auth.js';
 import { BasePage } from '@lib/fw/BasePage.js';
-import logo from '@stores/img/lumba.png';
+import logo from '@runtime/img/lumba.png';
 import { t } from '../../runtime/i18n.js';
 
 interface LoginCredential {
