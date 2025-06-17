@@ -7,6 +7,7 @@ export interface CreateUserParam {
   startTime: Date;
   expiryTime: Date;
   accessGroupId?: string;
+  pin?: string;
   tzOffset?: number;
 }
 
@@ -26,6 +27,10 @@ export function createUser(param: CreateUserParam): BiostarRequest {
 
   if (param.accessGroupId) {
     body.User.access_groups = [{ id: param.accessGroupId }];
+  }
+
+  if (param.pin) {
+    body.User.pin = param.pin;
   }
 
   return {

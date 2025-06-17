@@ -145,10 +145,14 @@ export class ChangePassword extends BasePage {
           password: model.password,
         }),
       );
-
-      Toast.open(t('Welcome'));
-      const redirectTo = this.router.ctx.query.redirect ?? '/';
-      location.href = redirectTo;
+      Toast.open(t('Password changed successfully'));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const redirectTo = this.router.ctx.query.redirect;
+      if (redirectTo) {
+        location.href = redirectTo;
+      } else {
+        this.router.pop();
+      }
     } catch (err) {
       console.error('submit err:', err);
       Toast.open(t('Unauthorized'), { variant: 'danger' });

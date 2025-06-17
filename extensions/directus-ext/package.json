@@ -3,15 +3,9 @@
   "description": "Please enter a description for your extension",
   "icon": "extension",
   "version": "1.0.0",
-  "keywords": [
-    "directus",
-    "directus-extension",
-    "directus-extension-hook"
-  ],
+  "keywords": ["directus", "directus-extension", "directus-extension-hook"],
   "type": "module",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "private": true,
   "directus:extension": {
     "type": "bundle",
@@ -34,6 +28,7 @@
     "host": "^10.10.0"
   },
   "scripts": {
+    "clean": "rm -rf dist .wireit",
     "build": "directus-extension build",
     "dev": "directus-extension build -w --no-minify",
     "lint": "tsc --pretty --noEmit",
@@ -59,6 +54,7 @@
   },
   "dependencies": {
     "nanoid": "^5.1.5",
+    "pino": "^9.7.0",
     "ws": "^8.18.2"
   },
   "devDependencies": {

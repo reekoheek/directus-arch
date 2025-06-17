@@ -1,4 +1,4 @@
-name: wira-messbontang
+name: pristine
 services:
   directus:
     restart: always
@@ -18,7 +18,7 @@ services:
     environment:
       KEY: "directus-key"
       SECRET: "directus-secret"
-      ADMIN_EMAIL: "admin@simplo.id"
+      ADMIN_EMAIL: "admin@pristine.app"
       ADMIN_PASSWORD: "1"
       DB_CLIENT: "sqlite3"
       DB_FILENAME: "/directus/database/data.db"
@@ -35,9 +35,6 @@ services:
       CORS_CREDENTIALS: 'true'
       CORS_MAX_AGE: '180000'
       EXTENSIONS_AUTO_RELOAD: true
-      # APP_BIOSTAR_HOST: "host.docker.internal"
-      # APP_BIOSTAR_PASSWORD: "Password1"
-      # APP_BIOSTAR_USER_GROUP: "1002"
 
   app:
     restart: always
@@ -81,6 +78,5 @@ services:
       - 1025:1025
     environment:
       MP_MAX_MESSAGES: 5000
-      # MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1

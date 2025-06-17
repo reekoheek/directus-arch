@@ -1,5 +1,5 @@
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-type FactoryFn<T> = (ctx: any) => T;
+type FactoryFn<T> = (ctx: any, ...rest: any[]) => T;
 type DisposeFn<T> = (store: T) => void | Promise<void>;
 
 interface Entry<T> {
@@ -11,7 +11,7 @@ const signature = new Date().toJSON();
 
 export function createStore<T>(key: string, factoryFn: FactoryFn<T>, disposeFn?: DisposeFn<T>) {
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const fn = (ctx: any): Promise<T> => {
+  const fn = (ctx: any, ...rest: any[]): Promise<T> => {
     const entry = getStoreEntry<T>(ctx, key);
     if (entry && entry.signature === signature) {
       return entry.promisedStore;
@@ -23,7 +23,7 @@ export function createStore<T>(key: string, factoryFn: FactoryFn<T>, disposeFn?:
       })();
     }
 
-    const promisedStore = Promise.resolve(factoryFn(ctx));
+    const promisedStore = Promise.resolve(factoryFn(ctx, ...rest));
     saveStoreEntry(ctx, key, { promisedStore, signature });
     return promisedStore;
   };

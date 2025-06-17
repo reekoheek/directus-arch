@@ -3,10 +3,8 @@ import { html, LitElement } from 'lit';
 import { router } from '../../runtime/router.js';
 import '@lib/components/Menu.js';
 import { createMenu } from '../../runtime/menu.js';
-import logo from '@runtime/img/lumba.png';
+import logo from '@runtime/img/simplo.png';
 import type { MenuGroup } from '@lib/components/Menu.js';
-import { config } from '../../runtime/config.js';
-import { auth } from '../../runtime/auth.js';
 
 @customElement('a-app')
 export class App extends LitElement {
@@ -69,9 +67,6 @@ export class App extends LitElement {
       <nav class="border-end bg-body-tertiary">
         <div class="p-3 pb-0">
           <img src="${logo}" alt="" style="width: 100%">
-          <div class="text-danger small text-center">
-            ${config.dev ? 'dev' : ''}
-          </div>
         </div>
         <c-menu .groups=${this.menu}></c-menu>
       </nav>
